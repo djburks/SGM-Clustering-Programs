@@ -10,7 +10,7 @@ SGM and SGM_Loop can be compiled simply by using g++ assuming you have boost-lib
 
 SGM requires a fasta file and a primary, secondary, and tertiary threshold.  An optional fifth parameter will assign a user-defined prefix to all output.
 
-`SGM example-genome.fasta 0.90 0.95 0.95 example-output-prefix`
+`./SGM example-genome.fasta 0.90 0.95 0.95 example-output-prefix`
 
 #### Thresholds
 
