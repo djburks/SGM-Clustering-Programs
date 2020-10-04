@@ -1,6 +1,5 @@
 # SGM-Clustering-Programs
-Tools for Evaluating Performance of SGM Clustering Alternatives
-This is a framework for building your own set of benchmarks.
+Toolset for evaluating standard, hierarchical, and other clustering methods with MJSD-based segmentation and clustering combinations.
 
 ## Compilation
 SGM and SGM_Loop can be compiled simply by using g++ assuming you have boost-libs (or its distribution-specific equivalent) installed and available in your PATH.
