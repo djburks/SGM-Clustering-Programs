@@ -1,6 +1,10 @@
 # SGM-Clustering-Programs
 Toolset for evaluating standard, hierarchical, and other clustering methods with MJSD-based segmentation and clustering combinations.
 
+## Genomes
+
+Chimeric genomes used in the benchmark study are provided in the ACG.zip file.
+
 ## Compilation
 SGM and SGM_Loop can be compiled simply by using g++ assuming you have boost-libs (or its distribution-specific equivalent) installed and available in your PATH.
 
