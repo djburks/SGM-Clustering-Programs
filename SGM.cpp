@@ -1,9 +1,3 @@
-// The complete SGM re-write
-// January 9 2020
-// Averaged clustering method.
-// Modifications on January 27, 2020
-// For segmented Network/Smatrix/Dmatrix output
-// Non-hierc
 
 # include <fstream>
 # include <stdlib.h>
@@ -641,30 +635,56 @@ std::vector<cluster> clusterbeyond (std::vector<cluster> grpsegments,float thres
     return grpsegments;
 }
 
+// Matrix manipulator function to remove columns and "reset" rows for cluster memory.
+
+std::vector<std::vector<double>> matrixShift (std::vector<std::vector<double>> inmatrix, int row, int col) {
+    for(int i=0;i<inmatrix[row].size();++i) {
+        inmatrix[row][i] = 99.0;
+    }
+    for(int i=0;i<inmatrix.size();++i) {
+        inmatrix[i][row] = 99.0;
+        inmatrix[i].erase(inmatrix[i].begin() + col);
+    }
+    inmatrix.erase(inmatrix.begin() + col);
+    return inmatrix;
+}
+
 // Tertiary Non-Adjacent Group Clustering Function with best MJSD per round.
 
 std::vector<cluster> clusterbeyondX (std::vector<cluster> grpsegments,float threshold) {
     double dmjsd;
-    int bestdex,bestdex2;
-    double bestlow = 5;
-    for(int i=0;i<grpsegments.size()-1;++i) {
-        for(int i2=i+1;i2<grpsegments.size();++i2) {
-            dmjsd = dmJSDcalc(entropy(grpsegments[i],grpsegments[i2]));
-            if ((dmjsd < threshold) && (dmjsd < bestlow)) {
-                bestlow = dmjsd;
-                bestdex = i;
-                bestdex2 = i2;
+    bool change = true;
+    std::vector<std::vector<double>> matrix(grpsegments.size(),std::vector<double>(grpsegments.size(),99.0));
+    while(change == true) {
+        double bestlow = 5;
+        int bestdex,bestdex2;
+        change = false;
+        for(int i=0;i<grpsegments.size()-1;++i) {
+            for(int i2=i+1;i2<grpsegments.size();++i2) {
+                if (matrix[i][i2] > 90) {
+                    dmjsd = dmJSDcalc(entropy(grpsegments[i],grpsegments[i2]));
+                    matrix[i][i2] = dmjsd;
+                }
+                else {
+                    dmjsd = matrix[i][i2];
+                }
+                if ((dmjsd < threshold) && (dmjsd < bestlow)) {
+                    bestlow = dmjsd;
+                    bestdex = i;
+                    bestdex2 = i2;
+                }
             }
+    
         }
- 
-    }
-    if (bestlow < threshold) {
-        grpsegments[bestdex] = clustermerge(grpsegments[bestdex],grpsegments[bestdex2]);
-        grpsegments.erase(grpsegments.begin() + bestdex2);
+        if (bestlow < threshold) {
+            grpsegments[bestdex] = clustermerge(grpsegments[bestdex],grpsegments[bestdex2]);
+            grpsegments.erase(grpsegments.begin() + bestdex2);
+            matrix = matrixShift(matrix,bestdex,bestdex2);
+            change = true;
+        }
     }
     return grpsegments;
 }
-
 // Printing FASTA function.
 
 void fasfilePrinter(std::string outfile,std::vector<cluster> clusters) {
@@ -800,12 +820,7 @@ int main(int argc, char *argv[]) {
     std::cout << stage2segments.size() << " Clusters Remaining Post-Merge" << std::endl;
     std::vector<cluster> stage3segments;
     std::cout << "Stage 2 Clustering..." << std::endl;
-    while(stagesize != stage3segments.size()) {
-        stagesize = stage3segments.size();
-        //stage3segments = clusterbeyondX(stage2segments,t3);
-        stage3segments = clusterbeyond(stage2segments,t3);
-        stage2segments = stage3segments;
-    }
+    stage3segments = clusterbeyondX(stage2segments,t3);
     std::cout << stage3segments.size() << " Clusters Remaining Post-Merge" << std::endl;
     std::cout << "Printing Output to " << outfile << std::endl;
     //netfilePrinter(outfile,stage3segments);
@@ -814,7 +829,7 @@ int main(int argc, char *argv[]) {
     std::string outfile4 = outfile + ".network";
     //netfilePrinter(outfile4,stage3segments);
     //disMatrixPrint(outfile,outfile2,stage3segments);
-    //simMatrixPrint(outfile,outfile3,stage3segments);
+    simMatrixPrint(outfile,outfile3,stage3segments);
     //fasfilePrinter(outfile,stage3segments);
     
     return 0;
