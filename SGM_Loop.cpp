@@ -414,7 +414,6 @@ std::vector<std::string> segmentation(std::string gnome,float threshold) {
         auto it = std::prev(tempsegments.end());
         if ((*it).length() < minseglen) {
             #Fix Here
-                    if ((*it).length() < minseglen) {
             std::vector<std::vector<float>> distMini;
             distMini.resize(16,std::vector<float>(5));
             for(int i=0;i<((*it).length()-globorder);i++) {
