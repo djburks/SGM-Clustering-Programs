@@ -409,6 +409,7 @@ std::vector<std::string> segmentation(std::string gnome,float threshold) {
     while (tempsegments.size() != 0) {
         auto it = std::prev(tempsegments.end());
         if ((*it).length() < minseglen) {
+            #Fix Here
             std::vector<std::vector<float>> distMini;
             distMini.resize(16,std::vector<float>(5));
             for(int i=0;i<((*it).length()-globorder);i++) {
@@ -424,7 +425,7 @@ std::vector<std::string> segmentation(std::string gnome,float threshold) {
 
             }
             distroz[(*it)] = distMini;
-
+            #Fix Above
             segments.push_back(std::move(*it));
             tempsegments.pop_back();
             continue;
