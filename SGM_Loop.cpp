@@ -413,6 +413,24 @@ std::vector<std::string> segmentation(std::string gnome,float threshold) {
     while (tempsegments.size() != 0) {
         auto it = std::prev(tempsegments.end());
         if ((*it).length() < minseglen) {
+            #Fix Here
+                    if ((*it).length() < minseglen) {
+            std::vector<std::vector<float>> distMini;
+            distMini.resize(16,std::vector<float>(5));
+            for(int i=0;i<((*it).length()-globorder);i++) {
+                std::string kmer = (*it).substr(i,2);
+                char afterk = (*it)[i+globorder];
+                int pos;
+                if (afterk == 'A') pos=1;
+                if (afterk == 'T') pos=2;
+                if (afterk == 'G') pos=3;
+                if (afterk == 'C') pos=4;
+                distMini[indexmer[kmer]][pos]++;
+                distMini[indexmer[kmer]][0]++;
+
+            }
+            distroz[(*it)] = distMini;
+            #Fix Above
             segments.push_back(std::move(*it));
             tempsegments.pop_back();
             continue;
